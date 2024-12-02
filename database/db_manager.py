@@ -117,7 +117,7 @@ class DBManager:
         
         return similarity
     
-    def get_qa(self, question, similarity_threshold=60):
+    def get_qa(self, question, similarity_threshold=70):
         """
         Поиск вопроса с высокой степенью совпадения
         

@@ -62,14 +62,16 @@ class AdminHandler:
         current_post = context.user_data.get('current_post')
         
         if current_post:
-            # Отправляем текущий пост для редактирования
-            await query.message.reply_text(
-                f"✏️ Отредактируйте пост:\n\n{current_post}"
-            )
+            # Устанавливаем режим редактирования
             context.user_data['editing_post'] = True
+            
+            # Отправляем текущий пост как сообщение, которое можно редактировать
+            await query.message.reply_text(
+                f"✏️ Отредактируйте пост ниже, просто отправив новое сообщение:\n\n{current_post}"
+            )
         else:
             await query.message.reply_text("❌ Нет поста для редактирования")
-
+            
     async def handle_edited_post(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         Обработка отредактированного поста
@@ -90,7 +92,7 @@ class AdminHandler:
 
             context.user_data['current_post'] = edited_post
             context.user_data['editing_post'] = False
-
+        
     async def publish_post(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         Публикация поста в канал

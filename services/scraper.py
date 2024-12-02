@@ -79,46 +79,6 @@ class Scraper:
             logger.error(f"Ошибка при скрапинге категории {category}: {str(e)}", exc_info=True)
             return []
 
-    async def scrape_all(self, language: str = 'ru') -> List[Dict]:
-        """
-        Скрапит контент со всех источников указанного языка
-        
-        Args:
-            language (str): Язык контента (по умолчанию 'ru')
-            
-        Returns:
-            List[Dict]: Список словарей с контентом
-        """
-        try:
-            logger.info(f"Начало скрапинга всех источников на языке '{language}'")
-            
-            # Фильтруем источники только по языку
-            filtered_sources = [
-                source for source in MEDICAL_SOURCES
-                if source.language == language
-            ]
-            
-            if not filtered_sources:
-                logger.warning(f"Не найдены источники на языке '{language}'")
-                return []
-            
-            # Создаём задачи для асинхронного скрапинга
-            tasks = [self.scrape_with_retry(source) for source in filtered_sources]
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            
-            # Фильтруем успешные результаты
-            valid_results = [
-                result for result in results
-                if isinstance(result, dict) and result is not None
-            ]
-            
-            logger.info(f"Успешно получено {len(valid_results)} результатов из {len(filtered_sources)} источников")
-            
-            return valid_results
-            
-        except Exception as e:
-            logger.error(f"Ошибка при скрапинге всех источников: {str(e)}", exc_info=True)
-            return []
 
     def _extract_keywords(self, content: str, max_keywords: int = 10) -> List[str]:
         """Улучшенное извлечение ключевых слов"""
@@ -131,19 +91,6 @@ class Scraper:
         except Exception as e:
             logger.warning(f"Ошибка при извлечении ключевых слов: {e}")
             return []
-
-    async def check_host_availability(self, url: str) -> bool:
-        """Проверяет доступность хоста перед скрапингом"""
-        try:
-            parsed_url = urlparse(url)
-            host = parsed_url.netloc
-            # Добавляем больше логирования
-            logger.info(f"Проверка доступности хоста {host}")
-            socket.gethostbyname(host)
-            return True
-        except socket.gaierror as e:
-            logger.error(f"Хост {host} недоступен: {str(e)}")
-            return False
 
     async def find_content(self, soup: BeautifulSoup, selectors: Dict[str, Union[str, List[str]]]) -> Dict[str, Optional[str]]:
         result = {'title': None, 'content': None, 'article': None}
