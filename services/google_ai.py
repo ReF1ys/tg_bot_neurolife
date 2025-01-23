@@ -23,15 +23,7 @@ class GoogleAIService:
         return result.text
 
     def _is_toxic_content(self, text):
-        """
-        Check if the content contains toxic or inappropriate words.
-        
-        Args:
-            text (str): The text to check for toxicity.
-        
-        Returns:
-            bool: True if content is toxic, False otherwise.
-        """
+
         toxic_keywords = [
             'hack', 'exploit', 'injection', 'malware', 
             'вирус', 'атака', 'взлом', 'шпионаж', 
@@ -42,29 +34,9 @@ class GoogleAIService:
         return any(keyword.lower() in text.lower() for keyword in toxic_keywords)
 
     def _count_tokens(self, text):
-        """
-        Count the number of tokens in the given text.
-        
-        Args:
-            text (str): The text to count tokens for.
-        
-        Returns:
-            int: Number of tokens in the text.
-        """
-        # This is a simple token estimation method
-        # In a real-world scenario, you might want to use the actual tokenizer from the AI library
         return len(text.split())
 
     def _generate_answer(self, question):
-        """
-        Generate an AI-powered answer for the given question.
-        
-        Args:
-            question (str): The question to answer.
-        
-        Returns:
-            str: The generated answer.
-        """
         try:
             result = self.model.generate_content(question)
             return result.text
@@ -72,16 +44,6 @@ class GoogleAIService:
             return f"Извините, произошла ошибка при генерации ответа: {str(e)}"
 
     def answer_question(self, question, context):
-        """
-        Main method to answer questions with safety checks.
-        
-        Args:
-            question (str): The question to answer.
-            context (str, optional): Additional context for the question.
-        
-        Returns:
-            str: The generated answer or an error message.
-        """
         # Проверка токсичности контента перед генерацией
         if self._is_toxic_content(question):
             return "Извините, я не могу обработать этот запрос."
